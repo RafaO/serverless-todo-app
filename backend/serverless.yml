@@ -28,6 +28,7 @@ functions:
       - http:
           method: get
           path: todos
+          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
