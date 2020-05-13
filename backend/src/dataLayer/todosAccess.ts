@@ -60,6 +60,26 @@ export class TodoAccess {
 
         return newValue.Attributes as TodoItem
     }
+
+    async deleteTodo(todoId: string): Promise<TodoItem> {
+
+        const queryResult = await this.docClient.query({
+            TableName: this.todosTable,
+            KeyConditionExpression: 'todoId = :todoId',
+            ExpressionAttributeValues: {
+                ':todoId': todoId
+            }
+        }).promise()
+        logger.info('Retrieved item', queryResult)
+
+        const deletedItem = await this.docClient.delete({
+            TableName: this.todosTable,
+            Key: { todoId, createdAt: queryResult.Items[0].createdAt },
+            ReturnValues: "ALL_OLD"
+        }).promise()
+
+        return deletedItem.Attributes as TodoItem
+    }
 }
 
 function createDynamoDBClient() {

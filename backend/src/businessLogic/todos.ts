@@ -31,3 +31,7 @@ export async function createTodo(
 export async function updateTodo(todoId: string, updateTodoRequest: UpdateTodoRequest): Promise<TodoItem> {
     return await todoAccess.updateTodo(todoId, updateTodoRequest)
 }
+
+export async function deleteTodo(todoId: string): Promise<TodoItem> {
+    return await todoAccess.deleteTodo(todoId)
+}
