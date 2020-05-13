@@ -42,6 +42,7 @@ functions:
       - http:
           method: post
           path: todos
+          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
