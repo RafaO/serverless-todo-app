@@ -5,7 +5,16 @@ import { TodoAccess } from '../dataLayer/todosAccess'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 
+import * as AWS from 'aws-sdk'
+const AWSXRay = require('aws-xray-sdk');
+const XAWS = AWSXRay.captureAWS(AWS)
+
 const todoAccess = new TodoAccess()
+
+const bucketName = process.env.IMAGES_S3_BUCKET
+const urlExpiration = process.env.SIGNED_URL_EXPIRATION
+
+const s3 = new XAWS.S3({ signatureVersion: 'v4' })
 
 export async function getAllTodos(): Promise<TodoItem[]> {
     return todoAccess.getAllTodos()
@@ -34,4 +43,12 @@ export async function updateTodo(todoId: string, updateTodoRequest: UpdateTodoRe
 
 export async function deleteTodo(todoId: string): Promise<TodoItem> {
     return await todoAccess.deleteTodo(todoId)
+}
+
+export function generateUploadUrl(todoId: string): string {
+    return s3.getSignedUrl('putObject', {
+        Bucket: bucketName,
+        Key: todoId,
+        Expires: urlExpiration
+    })
 }
