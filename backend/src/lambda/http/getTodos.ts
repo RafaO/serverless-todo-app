@@ -1,12 +1,14 @@
 import 'source-map-support/register'
 
 import { createLogger } from '../../utils/logger'
-import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { getAllTodos } from '../../businessLogic/todos'
+import * as middy from 'middy'
+import { cors } from 'middy/middlewares'
 
 const logger = createLogger('getTodos')
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.info('Getting all todos', event.body)
 
   const todos = await getAllTodos()
@@ -20,4 +22,6 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       items: todos
     })
   }
-}
+})
+
+handler.use(cors())
