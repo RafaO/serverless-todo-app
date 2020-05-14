@@ -4,6 +4,8 @@ service:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 provider:
   name: aws
@@ -17,6 +19,22 @@ provider:
     USER_ID_INDEX: UserIdIndex
     IMAGES_S3_BUCKET: todos-lupion-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+
+
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Todos API
+        description: Serverless application for todo lists
+    models:
+      - name: TodoCreateRequest
+        contentType: application/json
+        schema: ${file(src/requests/CreateTodoRequest.json)}
+      - name: TodoUpdateRequest
+        contentType: application/json
+        schema: ${file(src/requests/UpdateTodoRequest.json)}
 
 functions:
 
@@ -47,6 +65,12 @@ functions:
           path: todos
           authorizer: Auth
           cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a todo item
+            description: Create a todo item
+            requestModels:
+              'application/json': TodoCreateRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -62,6 +86,12 @@ functions:
           path: todos/{todoId}
           authorizer: Auth
           cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a todo item
+            description: Update a todo item
+            requestModels:
+              'application/json': TodoUpdateRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -146,3 +176,12 @@ resources:
                 - DELETE
                 - HEAD
               MaxAge: 3000
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
