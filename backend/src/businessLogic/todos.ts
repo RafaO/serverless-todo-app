@@ -16,8 +16,8 @@ const urlExpiration = process.env.SIGNED_URL_EXPIRATION
 
 const s3 = new XAWS.S3({ signatureVersion: 'v4' })
 
-export async function getAllTodos(): Promise<TodoItem[]> {
-    return todoAccess.getAllTodos()
+export async function getAllTodos(userId: string): Promise<TodoItem[]> {
+    return todoAccess.getAllTodos(userId)
 }
 
 export async function createTodo(
