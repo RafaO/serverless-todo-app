@@ -37,16 +37,16 @@ export async function createTodo(
     })
 }
 
-export async function updateTodo(todoId: string, updateTodoRequest: UpdateTodoRequest): Promise<TodoItem> {
-    return await todoAccess.updateTodo(todoId, updateTodoRequest)
+export async function updateTodo(userId: string, todoId: string, updateTodoRequest: UpdateTodoRequest): Promise<TodoItem> {
+    return await todoAccess.updateTodo(userId, todoId, updateTodoRequest)
 }
 
-export async function deleteTodo(todoId: string): Promise<TodoItem> {
-    return await todoAccess.deleteTodo(todoId)
+export async function deleteTodo(userId: string, todoId: string): Promise<TodoItem> {
+    return await todoAccess.deleteTodo(userId, todoId)
 }
 
-export async function generateUploadUrl(todoId: string): Promise<string> {
-    await todoAccess.createImage(todoId);
+export async function generateUploadUrl(userId: string, todoId: string): Promise<string> {
+    await todoAccess.createImage(userId, todoId);
     return s3.getSignedUrl('putObject', {
         Bucket: bucketName,
         Key: todoId,

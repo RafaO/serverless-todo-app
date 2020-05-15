@@ -7,6 +7,7 @@ import { updateTodo } from '../../businessLogic/todos';
 import { createLogger } from '../../utils/logger'
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
+import { getUserId } from '../utils'
 
 const logger = createLogger('updateTodo')
 
@@ -15,9 +16,11 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
 
   const todoId = event.pathParameters.todoId
   const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
+  const userId: string = getUserId(event)
 
   // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-  await updateTodo(todoId, updatedTodo)
+
+  await updateTodo(userId, todoId, updatedTodo)
 
   return {
     statusCode: 201,

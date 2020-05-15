@@ -5,6 +5,7 @@ import { createLogger } from '../../utils/logger'
 import { deleteTodo } from '../../businessLogic/todos';
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
+import { getUserId } from '../utils'
 
 const logger = createLogger('deleteTodo')
 
@@ -13,9 +14,10 @@ export const handler = middy(
     logger.info('deleteTodo')
 
     const todoId = event.pathParameters.todoId
+    const userId = getUserId(event)
 
     // TODO: Remove a TODO item by id
-    await deleteTodo(todoId)
+    await deleteTodo(userId, todoId)
 
     return {
       statusCode: 200,
