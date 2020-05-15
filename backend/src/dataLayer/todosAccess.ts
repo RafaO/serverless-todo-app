@@ -15,7 +15,8 @@ export class TodoAccess {
     constructor(
         private readonly docClient: DocumentClient = createDynamoDBClient(),
         private readonly userIdIndex = process.env.USER_ID_INDEX,
-        private readonly todosTable = process.env.TODOS_TABLE) {
+        private readonly todosTable = process.env.TODOS_TABLE,
+        private readonly bucketName = process.env.IMAGES_S3_BUCKET) {
     }
 
     async getAllTodos(userId: string): Promise<TodoItem[]> {
@@ -65,6 +66,25 @@ export class TodoAccess {
         }).promise()
 
         return newValue.Attributes as TodoItem
+    }
+
+    async createImage(todoId: String) {
+        let queryResult = await this.docClient.query({
+            TableName: this.todosTable,
+            KeyConditionExpression: 'todoId = :todoId',
+            ExpressionAttributeValues: {
+                ':todoId': todoId
+            }
+        }).promise()
+
+        await this.docClient.update({
+            TableName: this.todosTable,
+            Key: { todoId, createdAt: queryResult.Items[0].createdAt },
+            UpdateExpression: 'set attachmentUrl=:attachmentUrl',
+            ExpressionAttributeValues: {
+                ':attachmentUrl': `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+            }
+        }).promise()
     }
 
     async deleteTodo(todoId: string): Promise<TodoItem> {

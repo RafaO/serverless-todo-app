@@ -15,7 +15,7 @@ export const handler = middy(async (event: APIGatewayProxyEvent): Promise<APIGat
 
   // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
 
-  const uploadUrl = generateUploadUrl(todoId)
+  const uploadUrl = await generateUploadUrl(todoId)
 
   return {
     statusCode: 200,

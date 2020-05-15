@@ -45,7 +45,8 @@ export async function deleteTodo(todoId: string): Promise<TodoItem> {
     return await todoAccess.deleteTodo(todoId)
 }
 
-export function generateUploadUrl(todoId: string): string {
+export async function generateUploadUrl(todoId: string): Promise<string> {
+    await todoAccess.createImage(todoId);
     return s3.getSignedUrl('putObject', {
         Bucket: bucketName,
         Key: todoId,
