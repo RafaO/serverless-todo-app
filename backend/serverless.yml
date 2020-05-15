@@ -14,6 +14,13 @@ provider:
   tracing:
     lambda: true
     apiGateway: true
+    iamRoleStatements:
+          - Effect: 'Allow'
+            Action:
+              - 'xray:PutTraceSegments'
+              - 'xray:PutTelemetryRecords'
+            Resource:
+              - '*'
 
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-2'}
@@ -59,12 +66,6 @@ functions:
         Action:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.USER_ID_INDEX}
-      - Effect: 'Allow'
-        Action:
-          - 'xray:PutTraceSegments'
-          - 'xray:PutTelemetryRecords'
-        Resource:
-          - '*'
 
   # TODO: Configure this function
   CreateTodo:
@@ -86,12 +87,6 @@ functions:
         Action:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      - Effect: 'Allow'
-        Action:
-          - 'xray:PutTraceSegments'
-          - 'xray:PutTelemetryRecords'
-        Resource:
-          - '*'
 
   # TODO: Configure this function
   UpdateTodo:
@@ -114,12 +109,6 @@ functions:
           - dynamodb:Query
           - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      - Effect: 'Allow'
-        Action:
-          - 'xray:PutTraceSegments'
-          - 'xray:PutTelemetryRecords'
-        Resource:
-          - '*'
 
   # TODO: Configure this function
   DeleteTodo:
@@ -136,12 +125,6 @@ functions:
           - dynamodb:Query
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      - Effect: 'Allow'
-        Action:
-          - 'xray:PutTraceSegments'
-          - 'xray:PutTelemetryRecords'
-        Resource:
-          - '*'
 
   # TODO: Configure this function
   GenerateUploadUrl:
@@ -157,12 +140,6 @@ functions:
         Action:
           - s3:PutObject
         Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
-      - Effect: 'Allow'
-        Action:
-          - 'xray:PutTraceSegments'
-          - 'xray:PutTelemetryRecords'
-        Resource:
-          - '*'
       - Effect: Allow
         Action:
           - dynamodb:Query
